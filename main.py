@@ -1,28 +1,45 @@
-import pridobi_podatke
+import funkcije
 import csv
+import random
 
 with open('knjige.csv', 'w', newline='') as csvfile:
-    fieldnames = ['id', 'naslov', 'avtor', 'rating', 'num_rating', 'num_review', 'ganres', 'pages', 'vezava', 'leto']
+    fieldnames = ['count_id', 'goodreads_id', 'title', 'author', 'rating', 'num_rating', 'num_review', 'ganres', 'pages', 'formating', 'year']
     writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
     writer.writeheader()
     
-    n = 10000
+    zeleno_st = 10
     zbrani_naslovi = set()
+    zbrane_stevlike = set()
     
-    for i in range(1, n):
-        print(f"Scraping  page {i} out of {n}")
-        
+    stevec_knjig = 1
+    
+    while stevec_knjig <= zeleno_st:
+        print(f"Scraping book {stevec_knjig} out of {zeleno_st}")
+        goodreads_id = random.randint(1, 1995353)
+        if goodreads_id in zbrane_stevlike:
+            print(f"Goodreads ID {goodreads_id} is already processed.")
+            continue
+
         try:
-            url = f"https://www.goodreads.com/book/show/{i}-the-old-willis-place"
-            html = pridobi_podatke.pridobi_html(url)
-            podatki = pridobi_podatke.izlusci(html, i)
+            url = f"https://www.goodreads.com/book/show/{goodreads_id}"
+            html = funkcije.pridobi_html(url)
             
-            naslov_avtor = podatki['naslov'] + podatki['avtor']
-            if naslov_avtor not in zbrani_naslovi:
+            if funkcije.neveljaven_id_knjige(html):
+                continue
+            
+            podatki = funkcije.izlusci(html, stevec_knjig, goodreads_id)
+            
+            rating = float(podatki['num_rating'])
+            naslov_avtor = podatki['title'] + podatki['author']
+            
+            if naslov_avtor not in zbrani_naslovi and rating != 0:
                 writer.writerow(podatki)
                 zbrani_naslovi.add(naslov_avtor)
+                stevec_knjig += 1
             else:
-                print(f"{podatki['naslov']} is already in csv")
-            
-        except Exception:
-            pass            
+                print(f"{podatki['title']} by {podatki['author']} is already in the CSV or has no ratings.")
+        
+        except Exception as e:
+            print(f"Failed to process Goodreads ID {goodreads_id}: {e}")
+    
+        zbrane_stevlike.add(goodreads_id)
