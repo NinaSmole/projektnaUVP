@@ -1,9 +1,15 @@
+# OPOZORILO: sledeča koda je bila dokončana 8. 8. 2024, podatki uporabljeni v tej nalogi so bili iz interneta pobrani isti dan. 
+# Goodreads je 9. 8. 2024 obnovil spletno stran in odstranil določene podatke o knjigah (leto izdaje, vezava in število strani),
+# zato ta program ob zagonu ne vrne takšnih podatkov, kot so uporabljeni v nadljajni analizi.
+
 import funkcije
 import csv
 import random
 
 with open('knjige.csv', 'w', newline='') as csvfile:
-    fieldnames = ['count_id', 'goodreads_id', 'title', 'author', 'rating', 'num_rating', 'num_review', 'ganres', 'pages', 'formating', 'year']
+    fieldnames = [
+        'count_id', 'goodreads_id', 'title', 'author', 'rating', 'num_rating', 'num_review', 'ganres', 'pages', 'formating', 'year'
+        ]
     writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
     writer.writeheader()
     
